@@ -38,7 +38,7 @@ public class ScheduleItemService
         item.Description = scheduleItem.Description;
         item.Date = scheduleItem.Date;
         item.Time = scheduleItem.Time;
-        item.Occupancy = scheduleItem.Occupancy;
+        item.Vacancies = scheduleItem.Vacancies;
         _context.ScheduleItems.Update(item);
         await _context.SaveChangesAsync();
         return item;

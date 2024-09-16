@@ -11,7 +11,6 @@ public class ScheduleItem
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
     public int Id { get; set; } 
     
-    [NotNull]
     [MaxLength(100)]
     public string Location { get; set; }
     
@@ -28,5 +27,5 @@ public class ScheduleItem
     
     public string Time { get; set; }
     
-    public int Occupancy { get; set; }
+    public int Vacancies { get; set; }
 }

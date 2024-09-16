@@ -60,3 +60,56 @@ h1:focus {
 h3 {
     color: whitesmoke;
 }
+
+.carousel-container {
+    margin-bottom: 20px;
+}
+
+.carousel {
+    display: flex;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.carousel-item {
+    display: inline-block;
+    padding: 10px;
+    margin-right: 10px;
+    cursor: pointer;
+    background: whitesmoke;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.carousel-item.active {
+    background: pink;
+    color: black;
+}
+
+.carousel-item:hover {
+    background-color: rgba(255,255,255,0.57);
+}
+
+
+.table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+    overflow: hidden;
+}
+
+#applyButton {
+    padding: 4px;
+    cursor: pointer;
+    background: whitesmoke;
+    border-radius: 5px;
+}
+
+#applyButton:hover {
+    background-color: rgba(255,255,255,0.57);
+}
+
+#applyButton:disabled{
+    background-color: #929292;
+    cursor: not-allowed;
+}
+

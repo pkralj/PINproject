@@ -15,7 +15,6 @@ public class UserAccount
 
     [MaxLength(50)]
     public string Password { get; set; }
-
-    [MaxLength(20)]
-    public string Role { get; set; }    
+    
+    public bool isAdmin { get; set; }    
 }

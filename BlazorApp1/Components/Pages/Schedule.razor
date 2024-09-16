@@ -1,6 +1,176 @@
-﻿@page "/Schedule"
-<h3>Schedule</h3>
+﻿@page "/schedule"
+@using BlazorApp1.Components.Layout
+@inject ScheduleItemService ScheduleItemService
+
+<div style="flex: 2"></div>
+<div class="wrapper" style="display: flex; flex-direction: column; flex: 6">
+    <NavMenu/>
+    <div style="display: flex; justify-content: center; align-items: center; flex: 1">
+        <h3 style="text-align: center; flex: 1"> </h3> 
+    </div>
+
+
+    <div class="carousel-container" style="flex: 1; display:flex; align-items: center">
+        <div class="carousel" style="flex: 1">
+            @if (Next7Days != null && Next7Days.Any())
+            {
+                @for (int i = 0; i < Next7Days.Count; i++)
+                {
+                    var index = i;
+                    <div class="carousel-item @(index == SelectedDateIndex ? "active" : "")"
+                         @onclick="() => SelectDate(index)">
+                        @Next7Days[index].ToShortDateString()
+                    </div>
+                }
+            }
+            else
+            {
+                <div>No days available.</div>
+            }
+        </div>
+    </div>
+
+    <div style="flex: 6">
+        @if (SelectedDate != null)
+        {
+            <h4 style="color:whitesmoke; text-align: center">Schedule for @SelectedDate.Value.ToShortDateString()</h4>
+            <table class="table table-bordered" style="color: whitesmoke">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Host</th>
+                    <th>Description</th>
+                    <th>Vacancies</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (ScheduleItems != null && ScheduleItems.Any())
+                {
+                    @foreach (var item in ScheduleItems)
+                    {
+                        <tr>
+                            <td>@item.Title</td>
+                            <td>@item.Time</td>
+                            <td>@item.Location</td>
+                            <td>@item.Host</td>
+                            <td>@item.Description</td>
+                            <td>@item.Vacancies</td>
+                            @if (item.Vacancies > 0)
+                            {
+                                <td><button id="applyButton">Apply</button></td>
+                            }
+                            else
+                            {
+                                <td><button id="applyButton" disabled>Full</button></td>
+                            }
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7">No schedule items available for this date.</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div>No date selected.</div>
+        }
+    </div>
+</div>
+<div style="flex: 2"></div>
+
+
 
 @code {
-    
+    private List<DateTime> Next7Days { get; set; } = new List<DateTime>();
+    private DateTime? SelectedDate { get; set; }
+    private int SelectedDateIndex { get; set; } = 0;
+    private List<ScheduleItem> ScheduleItems { get; set; } = new List<ScheduleItem>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Step 1: Initialize the next 7 days and select today's date
+        CalculateNext7Days();
+        
+        // Step 2: Log to confirm dates are calculated
+        Console.WriteLine("Next 7 days: " + string.Join(", ", Next7Days.Select(d => d.ToShortDateString())));
+
+        await LoadScheduleForSelectedDate();
+    }
+
+    private void CalculateNext7Days()
+    {
+        var today = DateTime.Today;
+        Next7Days = Enumerable.Range(0, 7)
+            .Select(offset => today.AddDays(offset))
+            .ToList();
+
+        // Ensure the list of Next7Days is not empty and valid
+        if (Next7Days.Count > 0)
+        {
+            SelectedDate = Next7Days[0];  // Default to today (first date)
+        }
+
+        // Debugging log
+        Console.WriteLine("Selected date (default): " + SelectedDate?.ToShortDateString());
+    }
+
+    private async Task LoadScheduleForSelectedDate()
+    {
+        if (SelectedDate != null)
+        {
+            // Step 3: Log selected date for debugging
+            Console.WriteLine("Loading schedule for: " + SelectedDate.Value.ToShortDateString());
+
+            try
+            {
+                // Fetch all schedule items from the service
+                var allItems = await ScheduleItemService.GetScheduleItemsAsync();
+
+                // Filter items to include only those for the selected date
+                ScheduleItems = allItems
+                    .Where(item => item.Date.Date == SelectedDate.Value.Date)
+                    .ToList();
+
+                // Step 4: Log the fetched schedule items for debugging
+                Console.WriteLine("Schedule items found: " + ScheduleItems.Count);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error loading schedule items: " + ex.Message);
+            }
+
+            StateHasChanged(); // Force UI update
+        }
+        else
+        {
+            Console.WriteLine("No date selected.");
+        }
+    }
+
+    private async Task SelectDate(int index)
+    {
+        // Safeguard: Ensure the index is within the valid range of the Next7Days list
+        if (index >= 0 && index < Next7Days.Count)
+        {
+            SelectedDateIndex = index;
+            SelectedDate = Next7Days[index];
+
+            // Step 5: Log new selected date for debugging
+            Console.WriteLine("New selected date: " + SelectedDate?.ToShortDateString());
+
+            await LoadScheduleForSelectedDate();
+        }
+        else
+        {
+            Console.WriteLine("Invalid date index selected: " + index);
+        }
+    }
 }
