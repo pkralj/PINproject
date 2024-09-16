@@ -1,0 +1,33 @@
+#page[b-j65y7q72mt] {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    margin: 0;
+    max-height: 100%;
+}
+.title[b-j65y7q72mt] {
+    text-align: center;
+    background-color: black;
+    border-bottom: 2px solid pink;
+    margin-bottom: 0px;
+    margin-top: 0px;
+}
+#mainTitleH1[b-j65y7q72mt]{
+    font-size: 90px;
+    color: pink;
+}
+
+#main[b-j65y7q72mt] {
+    display: flex;
+    align-content: center;
+    background-color: black;
+    flex: 1;
+    justify-content: center;
+}
+
+
+
+
+
+
+

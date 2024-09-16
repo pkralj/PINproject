@@ -1,0 +1,16 @@
+﻿@page "/"
+
+@inject NavigationManager NavigationManager
+@inject AppState AppState
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        if (!AppState.IsLoggedIn)
+        {
+            NavigationManager.NavigateTo("/Login");
+        }
+    }
+
+}
