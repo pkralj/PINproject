@@ -19,7 +19,6 @@ C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\staticwebass
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.BlazorApp1.props
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\scopedcss\Components\Layout\MainLayout.razor.rz.scp.css
-C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\scopedcss\Components\Layout\NavMenu.razor.rz.scp.css
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\scopedcss\bundle\BlazorApp1.styles.css
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\scopedcss\projectbundle\BlazorApp1.bundle.scp.css
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\BlazorApp1.dll
@@ -134,3 +133,4 @@ C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\bin\Debug\net8.0\runtimes\win
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\bin\Debug\net8.0\runtimes\win\lib\net6.0\System.Windows.Extensions.dll
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\BlazorApp1.csproj.AssemblyReference.cache
 C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\BlazorApp1.csproj.CopyComplete
+C:\Users\patri\RiderProjects\BlazorApp1\BlazorApp1\obj\Debug\net8.0\BlazorApp1.sourcelink.json
