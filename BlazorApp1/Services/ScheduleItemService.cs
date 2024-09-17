@@ -38,6 +38,7 @@ public class ScheduleItemService
         item.Description = scheduleItem.Description;
         item.Date = scheduleItem.Date;
         item.Vacancies = scheduleItem.Vacancies;
+        item.Participants = scheduleItem.Participants;
         _context.ScheduleItems.Update(item);
         await _context.SaveChangesAsync();
         return item;

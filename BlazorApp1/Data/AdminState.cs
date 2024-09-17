@@ -2,5 +2,5 @@
 
 public class AdminState
 {
-    public bool IsAdmin { get; set; } = false;
+    public bool isAdmin { get; set; } = false;
 }

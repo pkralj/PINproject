@@ -26,4 +26,6 @@ public class ScheduleItem
     public DateTime Date { get; set; }
     
     public int Vacancies { get; set; }
+    
+    public List<UserAccount> Participants { get; set; }
 }

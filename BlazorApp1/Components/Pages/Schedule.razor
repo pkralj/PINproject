@@ -2,6 +2,7 @@
 @using BlazorApp1.Components.Layout
 @inject ScheduleItemService ScheduleItemService
 @inject NavigationManager NavigationManager
+@inject AdminState AdminState
 
 <div style="flex: 2"></div>
 <div class="wrapper" style="display: flex; flex-direction: column; flex: 6">
@@ -83,11 +84,19 @@
     </div>
 </div>
 <div style="display:flex; flex: 2; flex-direction: column">
-    <div style="flex: 1"></div>
-    <div style="flex: 1; align-content: flex-end">
-        <button id="addNewScheduleButton" @onclick='() => NavigationManager.NavigateTo("schedule/add")'>Add Schedule Item</button>
-    </div>
-    <div style="flex: 1"> </div>
+    @if (AdminState.isAdmin)
+    {
+        <div style="flex: 1"></div>
+        <div style="flex: 1; align-content: flex-end">
+            <button id="addNewScheduleButton" @onclick='() => NavigationManager.NavigateTo("schedule/add")'>Edit Schedule Items</button>
+        </div>
+        <div style="flex: 1"> </div>
+    }
+    else
+    {
+        
+    }
+        
 </div>
 
 

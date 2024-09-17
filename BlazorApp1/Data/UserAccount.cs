@@ -15,6 +15,8 @@ public class UserAccount
 
     [MaxLength(50)]
     public string Password { get; set; }
+
+    public bool isAdmin { get; set; } = false;
     
-    public bool isAdmin { get; set; }    
+    public List<ScheduleItem> myScheduleItems { get; set; }
 }

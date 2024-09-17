@@ -17,7 +17,9 @@ builder.Services.AddDbContext<AppDBContext>(options =>
         ("Conn string not found")));
 
 builder.Services.AddScoped<ScheduleItemService>();
+builder.Services.AddScoped<UserAccountService>();
 builder.Services.AddSingleton<AppState>();
+builder.Services.AddSingleton <AdminState>();
 
 var app = builder.Build();
 

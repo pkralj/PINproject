@@ -4,6 +4,7 @@ using BlazorApp1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp1.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240917193053_Added schedule to user account")]
+    partial class Addedscheduletouseraccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,10 +56,15 @@ namespace BlazorApp1.Migrations
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<int?>("UserAccountId")
+                        .HasColumnType("int");
+
                     b.Property<int>("Vacancies")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UserAccountId");
 
                     b.ToTable("schedule_items");
                 });
@@ -87,34 +95,16 @@ namespace BlazorApp1.Migrations
                     b.ToTable("user_accounts");
                 });
 
-            modelBuilder.Entity("ScheduleItemUserAccount", b =>
-                {
-                    b.Property<int>("ParticipantsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("myScheduleItemsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ParticipantsId", "myScheduleItemsId");
-
-                    b.HasIndex("myScheduleItemsId");
-
-                    b.ToTable("ScheduleItemUserAccount");
-                });
-
-            modelBuilder.Entity("ScheduleItemUserAccount", b =>
+            modelBuilder.Entity("BlazorApp1.Data.ScheduleItem", b =>
                 {
                     b.HasOne("BlazorApp1.Data.UserAccount", null)
-                        .WithMany()
-                        .HasForeignKey("ParticipantsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("myScheduleItems")
+                        .HasForeignKey("UserAccountId");
+                });
 
-                    b.HasOne("BlazorApp1.Data.ScheduleItem", null)
-                        .WithMany()
-                        .HasForeignKey("myScheduleItemsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+            modelBuilder.Entity("BlazorApp1.Data.UserAccount", b =>
+                {
+                    b.Navigation("myScheduleItems");
                 });
 #pragma warning restore 612, 618
         }
