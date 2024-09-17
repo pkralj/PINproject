@@ -3,6 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject AppState AppState
 
+
 <div id="login_container" style="flex:1; display: flex"> 
     <div style="flex: 3"></div>
     <div style="flex: 2; align-content: center; ">
@@ -24,7 +25,7 @@
                 <ValidationMessage For="@(() => loginModel.Password)" />
             </div>
             <br/>
-            <button type="submit" class="btn btn-primary">Login</button>
+            <button type="submit" id="loginButton">Login</button>
         </EditForm>
         <br/><br/>
         
@@ -44,16 +45,16 @@
 
     private void HandleLogin()
     {
-        // Simulate a login check - replace this with actual authentication logic
+        //TODO implement proper login
         if (loginModel.Username == "admin" && loginModel.Password == "password")
         {
             AppState.IsLoggedIn = true;
             loginFailed = false;
             Navigation.NavigateTo("/");
+            //TODO add admin state check
         }
         else
         {
-            // Login failed
             loginFailed = true;
         }
     }

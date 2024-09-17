@@ -113,3 +113,26 @@ h3 {
     cursor: not-allowed;
 }
 
+#addNewScheduleButton{
+    margin: auto;
+    margin-left: 40px;
+    cursor: pointer;
+    background: whitesmoke;
+    border-radius: 5px;
+    text-align: center;
+}
+#loginButton, #addButton {
+    cursor: pointer;
+    background: whitesmoke;
+    border-radius: 5px;
+    text-align: center;
+}
+#addNewScheduleButton:hover, #loginButton:hover {
+    background-color: rgba(255,255,255,0.57);
+}
+#addButton {
+    width: 70px;
+    height: 30px;
+    margin-bottom: 10px;
+}
+
