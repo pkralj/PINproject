@@ -3,127 +3,132 @@
 @inject ScheduleItemService ScheduleItemService
 
 
+
 <div style="flex: 2"></div>
 <div class="wrapper" style="display: flex; flex-direction: column; flex: 6">
     <NavMenu/>
 
-    <div style="display: flex; flex-direction: column; justify-content: center">
-        <h1 style="color: whitesmoke; vertical-align: center">Schedule Items</h1>
-        <div class="carousel-container" style="flex: 1; display:flex; align-items: center">
-            <div class="carousel" style="flex: 1">
-                @if (Next7Days.Any())
+    
+        
+    <div class="carousel-container" style="flex: 1; display:flex; align-items: center">
+        <div class="carousel" style="flex: 1">
+            @if (Next7Days.Any())
+            {
+                @for (int i = 0; i < Next7Days.Count; i++)
                 {
-                    @for (int i = 0; i < Next7Days.Count; i++)
+                    var index = i;
+                    <div class="carousel-item @(index == SelectedDateIndex ? "active" : "")"
+                         @onclick="() => SelectDate(index)">
+                        @Next7Days[index].ToShortDateString()
+                    </div>
+                }
+            }
+            else
+            {
+                <div>No days available.</div>
+            }
+        </div>
+    </div>
+    <h1 style="color: whitesmoke; vertical-align: center; text-align: center">Edit Schedule Items</h1>
+    <div style="flex: 6">
+        @if (SelectedDate != null)
+        {
+            <h4 style="color:whitesmoke; text-align: center">Schedule for @SelectedDate.Value.ToShortDateString()</h4>
+            <table class="table table-bordered" style="color: whitesmoke; max-width: 100%">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Time</th>
+                    <th>Location</th>
+                    <th>Host</th>
+                    <th>Description</th>
+                    <th>Vacancies</th>
+                </tr>
+                </thead>
+                <tbody>
+                @if (ScheduleItems != null && ScheduleItems.Any())
+                {
+                    @foreach (var item in ScheduleItems)
                     {
-                        var index = i;
-                        <div class="carousel-item @(index == SelectedDateIndex ? "active" : "")"
-                             @onclick="() => SelectDate(index)">
-                            @Next7Days[index].ToShortDateString()
-                        </div>
+                        <tr @onclick="@(() => Show(item.Id))">
+                            <td>@item.Title</td>
+                            <td>@item.Date.ToShortTimeString()</td>
+                            <td>@item.Location</td>
+                            <td>@item.Host</td>
+                            <td>@item.Description</td>
+                            <td>@item.Vacancies</td>
+                        </tr>
                     }
                 }
                 else
                 {
-                    <div>No days available.</div>
-                }
-            </div>
-        </div>
-
-        <div style="flex: 6">
-            @if (SelectedDate != null)
-            {
-                <h4 style="color:whitesmoke; text-align: center">Schedule for @SelectedDate.Value.ToShortDateString()</h4>
-                <table class="table table-bordered" style="color: whitesmoke; max-width: 100%">
-                    <thead>
                     <tr>
-                        <th>Title</th>
-                        <th>Time</th>
-                        <th>Location</th>
-                        <th>Host</th>
-                        <th>Description</th>
-                        <th>Vacancies</th>
+                        <td colspan="6">No schedule items available for this date.</td>
                     </tr>
-                    </thead>
-                    <tbody>
-                    @if (ScheduleItems != null && ScheduleItems.Any())
-                    {
-                        @foreach (var item in ScheduleItems)
-                        {
-                            <tr @onclick="@(() => Show(item.Id))">
-                                <td>@item.Title</td>
-                                <td>@item.Date.ToShortTimeString()</td>
-                                <td>@item.Location</td>
-                                <td>@item.Host</td>
-                                <td>@item.Description</td>
-                                <td>@item.Vacancies</td>
-                            </tr>
-                        }
-                    }
-                    else
-                    {
-                        <tr>
-                            <td colspan="6">No schedule items available for this date.</td>
-                        </tr>
-                    }
-                    </tbody>
-                </table>
-            }
-            else
-            {
-                <div>No date selected.</div>
-            }
-        </div>
+                }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <div>No date selected.</div>
+        }
         <div style="display: flex;justify-content: space-between">
             <button @onclick="@Add" id="addButton">Add</button>
             @if ((scheduleItems != null && mode == MODE.Add) || (scheduleItems != null && mode == MODE.EditDelete))
             {
-                <button @onclick="@(() => mode = MODE.None)" id="cancelButton">Cancel</button>
+            <button @onclick="@(() => mode = MODE.None)" id="cancelButton">Cancel</button>
             }
         </div>
 
         @if (scheduleItems != null && mode == MODE.Add)
         {
-            <input placeholder="Location" @bind="@location" />
-            <br />
-            <input placeholder="Title" @bind="@title" />
-            <br />
-            <input placeholder="Host" @bind="@host" />
-            <br />
-            <input placeholder="Description" @bind="@description" />
-            <br />
-            <input type="date" @bind="@date" />
-            <br />
-            <input type="time" @bind="@date" />
-            <br />
-            <input type="number" @bind="@vacancies" />
+            <div style="display: flex; flex-direction: column">
+                <input placeholder="Location" @bind="@location"/>
+                <br/>
+                <input placeholder="Title" @bind="@title"/>
+                <br/>
+                <input placeholder="Host" @bind="@host"/>
+                <br/>
+                <input placeholder="Description" @bind="@description"/>
+                <br/>
+                <input type="date" @bind="@date"/>
+                <br/>
+                <input type="time" @bind="@date"/>
+                <br/>
+                <input type="number" @bind="@vacancies"/>
 
-            <button @onclick="@Insert" class="btn btn-warning">Insert</button>
+                <button @onclick="@Insert" class="btn btn-warning">Insert</button>
+            </div>
+            
         }
 
         @if (scheduleItems != null && mode == MODE.EditDelete)
         {
-            <input type="hidden" @bind="@itemId"/>
-            <br/>
-            <input placeholder="Location" @bind="@location"/>
-            <br/>
-            <input placeholder="Title" @bind="@title"/>
-            <br/>
-            <input placeholder="Host" @bind="@host"/>
-            <br/>
-            <input placeholder="Description" @bind="@description"/>
-            <br/>
-            <input type="date" @bind="@date"/>
-            <br/>
-            <input type="time" @bind="@date"/>
-            <br/>
-            <input type="number" @bind="@vacancies"/>
-            <br/>
-            <button @onclick="@Delete" class="btn btn-danger">Delete</button>
-            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-            <button @onclick="@Update" class="btn btn-primary">Update</button>
-            
+            <div style="display: flex; flex-direction: column">
+                <input type="hidden" @bind="@itemId"/>
+                <br/>
+                <input placeholder="Location" @bind="@location"/>
+                <br/>
+                <input placeholder="Title" @bind="@title"/>
+                <br/>
+                <input placeholder="Host" @bind="@host"/>
+                <br/>
+                <input placeholder="Description" @bind="@description"/>
+                <br/>
+                <input type="date" @bind="@date"/>
+                <br/>
+                <input type="time" @bind="@date"/>
+                <br/>
+                <input type="number" @bind="@vacancies"/>
+                <br/>
+                <button @onclick="@Delete" class="btn btn-danger">Delete</button>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <button @onclick="@Update" class="btn btn-primary">Update</button>
+            </div>
         }
     </div>
+    
 </div>
 <div style="flex: 2"></div>
 
