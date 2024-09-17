@@ -33,7 +33,7 @@
             @if (SelectedDate != null)
             {
                 <h4 style="color:whitesmoke; text-align: center">Schedule for @SelectedDate.Value.ToShortDateString()</h4>
-                <table class="table table-bordered" style="color: whitesmoke">
+                <table class="table table-bordered" style="color: whitesmoke; max-width: 100%">
                     <thead>
                     <tr>
                         <th>Title</th>
@@ -62,7 +62,7 @@
                     else
                     {
                         <tr>
-                            <td colspan="7">No schedule items available for this date.</td>
+                            <td colspan="6">No schedule items available for this date.</td>
                         </tr>
                     }
                     </tbody>
@@ -73,7 +73,13 @@
                 <div>No date selected.</div>
             }
         </div>
-        <button @onclick="@Add" id="addButton">Add</button>
+        <div style="display: flex;justify-content: space-between">
+            <button @onclick="@Add" id="addButton">Add</button>
+            @if ((scheduleItems != null && mode == MODE.Add) || (scheduleItems != null && mode == MODE.EditDelete))
+            {
+                <button @onclick="@(() => mode = MODE.None)" id="cancelButton">Cancel</button>
+            }
+        </div>
 
         @if (scheduleItems != null && mode == MODE.Add)
         {
@@ -96,7 +102,7 @@
 
         @if (scheduleItems != null && mode == MODE.EditDelete)
         {
-            <input type="hidden" @bind="@id"/>
+            <input type="hidden" @bind="@itemId"/>
             <br/>
             <input placeholder="Location" @bind="@location"/>
             <br/>
@@ -107,6 +113,8 @@
             <input placeholder="Description" @bind="@description"/>
             <br/>
             <input type="date" @bind="@date"/>
+            <br/>
+            <input type="time" @bind="@date"/>
             <br/>
             <input type="number" @bind="@vacancies"/>
             <br/>
@@ -120,7 +128,7 @@
 <div style="flex: 2"></div>
 
 @code {
-    int id;
+    int itemId;
     string location;
     string title;
     string host;
@@ -216,7 +224,7 @@
     
     protected void ClearFields()
     {
-        id = -1;
+        itemId = 0;
         location = string.Empty;
         title = string.Empty;
         host = string.Empty;
@@ -238,12 +246,16 @@
         };
         await ScheduleItemService.InsertScheduleItemAsync(s);
         ClearFields();
+        await LoadScheduleForSelectedDate();
         await Load();
         mode = MODE.None;
+        StateHasChanged();
+        
     }
     protected async Task Show(int id)
     {
         selectedScheduleItem = await ScheduleItemService.GetScheduleItemByIdAsync(id);
+        itemId = selectedScheduleItem.Id;
         location = selectedScheduleItem.Location;
         title = selectedScheduleItem.Title;
         host = selectedScheduleItem.Host;
@@ -256,7 +268,7 @@
     {
         ScheduleItem s = new ScheduleItem()
         {
-            Id = id,
+            Id = itemId,
             Location = location,
             Title = title,
             Host = host,
@@ -264,8 +276,9 @@
             Date = date,
             Vacancies = vacancies
         };
-        await ScheduleItemService.UpdateScheduleItemAsync(id, s);
+        await ScheduleItemService.UpdateScheduleItemAsync(itemId, s);
         ClearFields();
+        await LoadScheduleForSelectedDate();
         await Load();
         mode = MODE.None;
         StateHasChanged();
@@ -273,9 +286,11 @@
 
     protected async Task Delete()
     {
-        await ScheduleItemService.DeleteScheduleItemAsync(id);
+        await ScheduleItemService.DeleteScheduleItemAsync(itemId);
         ClearFields();
+        await LoadScheduleForSelectedDate();
         await Load();
+        mode = MODE.None;
         StateHasChanged();
     }
 

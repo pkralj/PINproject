@@ -121,16 +121,21 @@ h3 {
     border-radius: 5px;
     text-align: center;
 }
-#loginButton, #addButton {
+#loginButton, #addButton, #cancelButton {
     cursor: pointer;
     background: whitesmoke;
     border-radius: 5px;
     text-align: center;
 }
-#addNewScheduleButton:hover, #loginButton:hover {
+#addNewScheduleButton:hover, #loginButton:hover, #cancelButton:hover, #addButton:hover {
     background-color: rgba(255,255,255,0.57);
 }
 #addButton {
+    width: 70px;
+    height: 30px;
+    margin-bottom: 10px;
+}
+#cancelButton {
     width: 70px;
     height: 30px;
     margin-bottom: 10px;
