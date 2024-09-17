@@ -121,23 +121,26 @@ h3 {
     border-radius: 5px;
     text-align: center;
 }
-#loginButton, #addButton, #cancelButton {
+#loginButton, #addButton, #cancelButton, #editUserButton, #deleteUserButton, 
+#updateUserButton, #LogOutUserButton, #registerButton {
     cursor: pointer;
     background: whitesmoke;
     border-radius: 5px;
     text-align: center;
 }
-#addNewScheduleButton:hover, #loginButton:hover, #cancelButton:hover, #addButton:hover {
+#addNewScheduleButton:hover, #loginButton:hover, #cancelButton:hover, #addButton:hover, 
+#editUserButton:hover, #deleteUserButton:hover, #updateUserButton:hover, 
+#LogOutUserButton:hover, #registerButton:hover {
     background-color: rgba(255,255,255,0.57);
 }
-#addButton {
-    width: 70px;
-    height: 30px;
-    margin-bottom: 10px;
-}
-#cancelButton {
+#addButton, #cancelButton, #editUserButton, #updateUserButton, 
+#LogOutUserButton {
     width: 70px;
     height: 30px;
     margin-bottom: 10px;
 }
 
+#deleteUserButton {
+    width: 120px;
+    height: 30px;
+}

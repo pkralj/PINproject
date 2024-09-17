@@ -47,7 +47,7 @@
         }
 
         <p style="color: whitesmoke; text-align: center">Already have an account?
-            <a href="javascript:void(0)" @onclick="() => isRegistering = false" style="color: #00aaff;">Login here</a>
+            <a class="loginSwitch" href="javascript:void(0)" @onclick="() => isRegistering = false" style="color:pink;">Login here</a>
         </p>
         }
         else
@@ -82,7 +82,7 @@
             }
 
             <p style="color: whitesmoke; text-align: center">Don't have an account?
-                <a href="javascript:void(0)" @onclick="() => isRegistering = true" style="color: #00aaff;">Register here</a>
+                <a class="loginSwitch" href="javascript:void(0)" @onclick="() => isRegistering = true" style="color:pink ;">Register here</a>
             </p>
         }
     </div>
@@ -106,6 +106,7 @@
         
         if (user != null) {
             AppState.IsLoggedIn = true;
+            AppState.UserId = user.Id;
             loginFailed = false;
             if (user.isAdmin)
             {

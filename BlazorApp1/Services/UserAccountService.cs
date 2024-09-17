@@ -1,4 +1,5 @@
 ﻿using BlazorApp1.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Services;
 
@@ -18,7 +19,7 @@ public class UserAccountService
     
     public async Task<UserAccount> GetUserAccountByIdAsync(int id)
     {
-        return await _context.UserAccounts.FindAsync(id);
+        return await _context.UserAccounts.Include(x=>x.myScheduleItems).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<UserAccount> InsertUserAccountAsync(UserAccount userAccount)

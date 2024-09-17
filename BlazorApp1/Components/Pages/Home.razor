@@ -1,22 +1,281 @@
 ﻿@page "/"
+@using BlazorApp1.Data
+@using BlazorApp1.Services
 @using BlazorApp1.Components.Layout
-
 @inject NavigationManager NavigationManager
 @inject AppState AppState
+@inject AdminState AdminState
+@inject UserAccountService UserAccountService
 
-<div class="wrapper" style="display: flex; flex-direction: column">
+<div style="flex: 2"></div>
+<div class="wrapper" style="display: flex; flex-direction: column; flex: 6">
     <NavMenu/>
-</div>
+    
+    <div style="display: flex; flex-direction: column; flex: 1">
+        @if (userAccount == null)
+        {
+            <p style="color: whitesmoke; text-align: center">Loading profile information...</p>
+        }
+        else
+        {
+            <h2 style="color: whitesmoke; flex: 2; display:flex; align-items: center; justify-content: center">User Profile</h2>
 
-@code
+            <div style="color: whitesmoke; flex: 5; display: flex;flex-direction: row">
+                <div style="flex: 1">
+                    @if (userAccount != null && mode == MODE.Edit)
+                    {
+                        <p><strong>Username:</strong> <input placeholder="@userAccount.Username" @bind="@userUsername"/></p>
+                        <p><strong>Password:</strong> <input placeholder="@userAccount.Password" @bind="@userPassword"/></p>
+                        <button @onclick="@Update" id="updateUserButton">Update</button>
+                    }
+                    else
+                    {
+                        <p><strong>Username:</strong> @userAccount.Username</p>
+                        <p><strong>Password:</strong> @userAccount.Password</p>
+                        <button @onclick="@Edit" id="editUserButton">Edit</button>
+                    }
+                </div>
+                <button @onclick="@LogOut" id="LogOutUserButton">Log Out</button>
+            </div>
+
+            <h4 style="color: whitesmoke; flex: 1; display:flex; align-items: center; justify-content: center">My Schedule Items</h4>
+
+            <div style="flex: 5">
+                @if (userAccount.myScheduleItems != null && userAccount.myScheduleItems.Any())
+                {
+                    <div class="carousel-container" style="flex: 1; display:flex; align-items: center">
+                        <div class="carousel" style="flex: 1">
+                            @if (Next7Days.Any())
+                            {
+                                @for (int i = 0; i < Next7Days.Count; i++)
+                                {
+                                    var index = i;
+                                    <div class="carousel-item @(index == SelectedDateIndex ? "active" : "")"
+                                         @onclick="() => SelectDate(index)">
+                                        @Next7Days[index].ToShortDateString()
+                                    </div>
+                                }
+                            }
+                            else
+                            {
+                                <div>No days available.</div>
+                            }
+                        </div>
+                    </div>
+                    <div style="flex: 6">
+                        @if (SelectedDate != null)
+                        {
+                            <h4 style="color:whitesmoke; text-align: center">Schedule for @SelectedDate.Value.ToShortDateString()</h4>
+                            <table class="table table-bordered" style="color: whitesmoke; max-width: 100%">
+                                <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Time</th>
+                                    <th>Location</th>
+                                    <th>Host</th>
+                                    <th>Description</th>
+                                    <th>Vacancies</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @if (ScheduleItems != null && ScheduleItems.Any())
+                                {
+                                    @foreach (var item in ScheduleItems)
+                                    {
+                                        <tr>
+                                            <td>@item.Title</td>
+                                            <td>@item.Date.ToShortTimeString()</td>
+                                            <td>@item.Location</td>
+                                            <td>@item.Host</td>
+                                            <td>@item.Description</td>
+                                            <td>@item.Vacancies</td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6">No schedule items available for this date.</td>
+                                    </tr>
+                                }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <p style="color: whitesmoke">No schedule items available.</p>
+                }
+            </div>
+            
+            <div style="display:flex; flex: 1; justify-content: right">
+                <button @onclick="ShowDeleteConfirmation" id="deleteUserButton">Delete account</button>
+            </div>
+        }
+    </div>
+</div>
+<div style="flex: 2"></div>
+@if (showDeleteConfirmation)
 {
-    protected override void OnInitialized()
+<div class="modal" tabindex="-1" style="display:block; background-color:rgba(0,0,0,0.5); position:fixed; top:0; left:0; right:0; bottom:0;">
+    <div class="modal-dialog" style="margin: 20vh auto; max-width: 400px">
+        <div class="modal-content" style="background-color: pink">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Deletion</h5>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete your account? This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <button id="deleteUserButton" @onclick="ConfirmDelete">Delete</button>
+                <button id="cancelButton" @onclick="CancelDelete">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@code {
+    int userId;
+    string userUsername;
+    string userPassword;
+    private bool userIsAdmin;
+    private bool showDeleteConfirmation = false;
+    
+    private List<DateTime> Next7Days { get; set; } = new List<DateTime>();
+    private DateTime? SelectedDate { get; set; }
+    private int SelectedDateIndex { get; set; } = 0;
+    private List<ScheduleItem> ScheduleItems { get; set; } = new List<ScheduleItem>();
+    
+    [Inject] private NavigationManager Navigation { get; set; }
+    
+    private UserAccount userAccount;
+    private enum MODE
+    {
+        None,
+        Edit
+    };
+    MODE mode = MODE.None;
+    
+
+    protected override async Task OnInitializedAsync()
     {
         if (!AppState.IsLoggedIn)
         {
             NavigationManager.NavigateTo("/login");
+            return;
         }
         
+        userId = (int)AppState.UserId;
+        if (userId != null)
+        {
+            userAccount = await UserAccountService.GetUserAccountByIdAsync(userId);
+        }
+        CalculateNext7Days();
+        await LoadScheduleForSelectedDate();
+        
+    }
+    private void CalculateNext7Days()
+    {
+        var today = DateTime.Today;
+        Next7Days = Enumerable.Range(0, 7)
+            .Select(offset => today.AddDays(offset))
+            .ToList();
+        
+        if (Next7Days.Count > 0)
+        {
+            SelectedDate = Next7Days[0];
+        }
+    }
+    private async Task SelectDate(int index)
+    {
+        if (index >= 0 && index < Next7Days.Count)
+        {
+            SelectedDateIndex = index;
+            SelectedDate = Next7Days[index];
+            await LoadScheduleForSelectedDate();
+        }
+        else
+        {
+            Console.WriteLine("Invalid date index selected: " + index);
+        }
+    }
+    private async Task LoadScheduleForSelectedDate()
+    {
+        if (SelectedDate != null)
+        {
+            try
+            {
+                var allItems = userAccount.myScheduleItems;
+                ScheduleItems = allItems
+                    .Where(item => item.Date.Date == SelectedDate.Value.Date)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            StateHasChanged(); 
+        }
+        else
+        {
+            Console.WriteLine("No date selected.");
+            
+        }
+    }
+    
+    private async Task LogOut()
+    {
+        AppState.IsLoggedIn = false;
+        AppState.UserId = null;
+        if (AdminState.isAdmin)
+        {
+            AdminState.isAdmin = false;
+        }
+        Navigation.NavigateTo("/login");
     }
 
+    protected async Task Update()
+    {
+        UserAccount u = new UserAccount()
+        {
+            Id = userId,
+            Username = userUsername,
+            Password = userPassword,
+            isAdmin = userIsAdmin
+        };
+        await UserAccountService.UpdateUserAccountAsync(userId, u);
+        mode = MODE.None;
+        StateHasChanged();
+    }
+    
+    protected async Task Edit()
+    {   userAccount = await UserAccountService.GetUserAccountByIdAsync(userId);
+        userId = userAccount.Id;
+        userUsername = userAccount.Username;
+        userPassword = userAccount.Password;
+        userIsAdmin = userAccount.isAdmin;
+        mode = MODE.Edit;
+    }
+    
+    protected void ShowDeleteConfirmation()
+    {
+        showDeleteConfirmation = true;
+    }
+
+    protected void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+    }
+
+    protected async Task ConfirmDelete()
+    {
+        await UserAccountService.DeleteUserAccountAsync(userId);
+        showDeleteConfirmation = false;
+        LogOut();
+    }
 }
+
+}
+
