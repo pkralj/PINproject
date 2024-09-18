@@ -47,7 +47,7 @@
         }
 
         <p style="color: whitesmoke; text-align: center">Already have an account?
-            <a class="loginSwitch" href="javascript:void(0)" @onclick="() => isRegistering = false" style="color:pink;">Login here</a>
+            <a class="loginSwitch" href="javascript:void(0)" @onclick="() => { ClearFields(); isRegistering = false; }" style="color:pink;">Login here</a>
         </p>
         }
         else
@@ -82,7 +82,7 @@
             }
 
             <p style="color: whitesmoke; text-align: center">Don't have an account?
-                <a class="loginSwitch" href="javascript:void(0)" @onclick="() => isRegistering = true" style="color:pink ;">Register here</a>
+                <a class="loginSwitch" href="javascript:void(0)" @onclick="() => { ClearFields(); isRegistering = true; }" style="color:pink ;">Register here</a>
             </p>
         }
     </div>
@@ -90,7 +90,6 @@
 </div>
 
 @code {
-    //TODO: Configure clearing input fields when switching between login and register
     private LoginModel loginModel = new LoginModel();
     private RegisterModel registerModel = new RegisterModel();
     private bool loginFailed = false;
@@ -149,7 +148,19 @@
         registerFailed = false;
         isRegistering = false;
     }
+    
+    public void ClearFields()
+    {
+        loginModel.Username = "";
+        loginModel.Password = "";
+        registerModel.Username = "";
+        registerModel.Password = "";
+        registerModel.ConfirmPassword = "";
 
+        registerFailed = false;
+        loginFailed = false;
+    }
+    
 
     public class LoginModel
     {
