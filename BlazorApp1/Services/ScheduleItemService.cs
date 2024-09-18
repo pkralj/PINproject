@@ -1,4 +1,5 @@
 ﻿using BlazorApp1.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace BlazorApp1.Services;
 
@@ -18,7 +19,7 @@ public class ScheduleItemService
     
     public async Task<ScheduleItem> GetScheduleItemByIdAsync(int id)
     {
-       return await _context.ScheduleItems.FindAsync(id);
+       return await _context.ScheduleItems.Include(x=>x.Participants).FirstOrDefaultAsync(x => x.Id == id);
     }
 
     public async Task<ScheduleItem> InsertScheduleItemAsync(ScheduleItem scheduleItem)

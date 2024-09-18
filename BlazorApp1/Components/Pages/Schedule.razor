@@ -1,8 +1,10 @@
 ﻿@page "/schedule"
 @using BlazorApp1.Components.Layout
 @inject ScheduleItemService ScheduleItemService
+@inject UserAccountService UserAccountService
 @inject NavigationManager NavigationManager
 @inject AdminState AdminState
+@inject AppState AppState
 
 <div style="flex: 2"></div>
 <div class="wrapper" style="display: flex; flex-direction: column; flex: 6">
@@ -57,14 +59,23 @@
                             <td>@item.Host</td>
                             <td>@item.Description</td>
                             <td>@item.Vacancies</td>
-                            @if (item.Vacancies > 0)
+                            
+                            @if (scheduleItems.FirstOrDefault(x => x.Id == item.Id) != null)
                             {
-                                <td><button id="applyButton">Apply</button></td>
+                                <td><button @onclick="() => HandleCancel(item.Id)" id="cancelButton">Cancel</button></td>
                             }
                             else
-                            {
-                                <td><button id="applyButton" disabled>Full</button></td>
+                            {  
+                                @if (item.Vacancies > 0)
+                                {
+                                <td><button @onclick="() => HandleApply(item.Id)" id="applyButton">Apply</button></td>
+                                }
+                                else
+                                {
+                                    <td><button id="applyButton" disabled>Full</button></td>
+                                }
                             }
+                            
                         </tr>
                     }
                 }
@@ -102,7 +113,10 @@
 
 
 @code {
-    //TODO: Configure the vacancies logic
+    int userId;
+    UserAccount userAccount;
+    List<ScheduleItem> scheduleItems;
+    
     private List<DateTime> Next7Days { get; set; } = new List<DateTime>();
     private DateTime? SelectedDate { get; set; }
     private int SelectedDateIndex { get; set; } = 0;
@@ -110,6 +124,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        userId = (int)AppState.UserId;
+        userAccount = await UserAccountService.GetUserAccountByIdAsync(userId);
+        scheduleItems = userAccount.myScheduleItems;
         CalculateNext7Days();
         await LoadScheduleForSelectedDate();
     }
@@ -162,6 +179,48 @@
         else
         {
             Console.WriteLine("Invalid date index selected: " + index);
+        }
+    }
+
+    private async Task HandleApply(int itemId)
+    {
+        var item = await ScheduleItemService.GetScheduleItemByIdAsync(itemId);
+        
+        try
+        {
+            if (item.Participants == null)
+            {
+                item.Participants = new List<UserAccount>();
+                item.Participants.Add(userAccount);
+            }
+            else
+            { 
+                item.Participants.Add(userAccount);
+            }
+            item.Vacancies--;
+            await ScheduleItemService.UpdateScheduleItemAsync(itemId, item);
+            await LoadScheduleForSelectedDate();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+        }
+    }
+
+    private async Task HandleCancel(int itemId)
+    {
+        var item = await ScheduleItemService.GetScheduleItemByIdAsync(itemId);
+        
+        try
+        {
+            item.Participants.Remove(userAccount);
+            item.Vacancies++;
+            await ScheduleItemService.UpdateScheduleItemAsync(itemId, item);
+            await LoadScheduleForSelectedDate();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
         }
     }
 }
