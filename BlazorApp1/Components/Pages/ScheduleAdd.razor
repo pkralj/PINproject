@@ -96,8 +96,10 @@
                 <input type="time" @bind="@date"/>
                 <br/>
                 <input type="number" @bind="@vacancies"/>
-
-                <button @onclick="@Insert" class="btn btn-warning">Insert</button>
+                <div style="display: flex; justify-content: center">
+                    <button @onclick="@Insert" id="insertSchedItemButton">Insert</button>
+                </div>
+                
             </div>
             
         }
@@ -121,9 +123,12 @@
                 <br/>
                 <input type="number" @bind="@vacancies"/>
                 <br/>
-                <button @onclick="@Delete" class="btn btn-danger">Delete</button>
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
-                <button @onclick="@Update" class="btn btn-primary">Update</button>
+                <br/>
+                <div style="display: flex; justify-content: center">
+                    <button @onclick="@Update" id="updateSchedItemButton">Update</button>
+                    <button @onclick="@Delete" id="deleteSchedItemButton">Delete</button>
+                </div>
+                
             </div>
         }
     </div>
