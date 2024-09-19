@@ -5,12 +5,7 @@ College project using Blazor Web App as an application user interface. Project i
 Table of Contents
 
     Features
-    Prerequisites
-    Installation
-    Running the Application
     Project Structure
-    Contributing
-    License
 
 Features
 
